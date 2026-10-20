@@ -121,6 +121,7 @@ class CurveHoverController(QObject):
         self.curve = self.result = None
         self.sign = 1
         self.method = "saturation"
+        self.polarity = "n"
         self.series = []
         self.last_details = None
         self._watched_window = None
@@ -137,9 +138,10 @@ class CurveHoverController(QObject):
         for action in toolbar.actions():
             action.triggered.connect(self.hide)
 
-    def configure(self, curve, result, sign=1, method="saturation"):
+    def configure(self, curve, result, sign=1, method="saturation", polarity="n"):
         self.hide()
         self.curve, self.result, self.sign, self.method = curve, result, sign, method
+        self.polarity = result.settings.polarity if result is not None else polarity
         self.series = []
         # 创建组件时，画布可能尚未加入主窗口；等数据加载、窗口层级确定后再绑定顶层窗口。
         top_level = self.canvas.window()
@@ -258,28 +260,32 @@ class CurveHoverController(QObject):
         self.marker.raise_()
 
     def describe(self, series, index, position, projected):
+        polarity_sign = 1 if self.polarity == "n" else -1
         transformed = series.artist.axes.transData.inverted().transform(position)
         if series.kind == "tft:fit-model":
             voltage = float(transformed[0])
             value = float(self.result.slope * voltage + self.result.intercept)
             saturation = self.result.settings.method == "saturation"
             rows = [("栅极电压 Vg", f"{voltage:.7g} V"),
-                    ("拟合 √Id" if saturation else "拟合 Id", f"{value:.7g} {'A½' if saturation else 'A'}")]
+                    ("拟合 √|Id|" if saturation else "拟合 |Id|", f"{value:.7g} {'A½' if saturation else 'A'}")]
             if not saturation or value >= 0:
-                rows.append(("模型电流 Id", f"{value ** 2 if saturation else value:.7g} A"))
+                model_current = polarity_sign * (value ** 2 if saturation else value)
+                rows.append(("模型电流 Id", f"{model_current:.7g} A"))
             rows.extend([("阈值估计 Vth", f"{self.result.threshold_v:.7g} V"),
                          ("拟合 R²", f"{self.result.r_squared:.7f}")])
             return {"heading": "拟合曲线 · 模型估计", "rows": rows,
                     "note": "当前位置的模型预测，不是实测点。", "kind": series.kind, "voltage": voltage}
         corrected = self.curve.current * self.sign
+        magnitude = polarity_sign * corrected
+        eligible = (magnitude > 0) & np.isfinite(magnitude) & np.isfinite(self.curve.voltage)
         if series.kind == "tft:fit-samples":
             valid = ((self.curve.voltage >= self.result.settings.start)
-                     & (self.curve.voltage <= self.result.settings.end) & (corrected > 0))
+                     & (self.curve.voltage <= self.result.settings.end) & eligible)
             indices = np.flatnonzero(valid)
             indices = indices[np.argsort(self.curve.voltage[indices])]
             source_index = int(indices[index])
         elif series.kind == "tft:positive":
-            source_index = int(np.flatnonzero(corrected > 0)[index])
+            source_index = int(np.flatnonzero(eligible)[index])
         else:
             source_index = int(index)
         voltage = float(self.curve.voltage[source_index])
@@ -293,9 +299,9 @@ class CurveHoverController(QObject):
             rows.append(("图示 |Id|", f"{abs(current):.7g} A"))
         elif self.mode == "fit":
             saturation = (self.result.settings.method if self.result else self.method) == "saturation"
-            value = float(np.sqrt(current)) if saturation else current
+            value = float(np.sqrt(polarity_sign * current)) if saturation else polarity_sign * current
             unit = "A½" if saturation else "A"
-            rows.append(("图示 √Id" if saturation else "图示 Id", f"{value:.7g} {unit}"))
+            rows.append(("图示 √|Id|" if saturation else "图示 |Id|", f"{value:.7g} {unit}"))
             if series.kind == "tft:fit-samples":
                 predicted = float(self.result.fit_predicted[index])
                 rows.extend([("拟合预测", f"{predicted:.7g} {unit}"),

@@ -19,8 +19,9 @@ def export_bundle(directory: str | Path, curve: Curve, result: AnalysisResult) -
         writer = csv.writer(handle)
         writer.writerow(["参数", "数值", "单位或说明"])
         writer.writerows([
+            ["器件类型", result.settings.polarity, "n 型或 p 型 TFT"],
             ["阈值电压", result.threshold_v, "V；模型拟合估计"],
-            ["扫描电流比", result.on_off_ratio, "当前扫描段内正电流最大值与最小值之比；无量纲"],
+            ["扫描电流比", result.on_off_ratio, "当前扫描段内符合器件极性的导通电流幅值最大值与最小值之比；无量纲"],
             ["场效应迁移率", result.mobility_cm2_vs, "cm²/(V·s)；空值表示条件不满足"],
             ["R²", result.r_squared, "所选变换空间"],
             ["拟合点数", result.fitted_points, ""],

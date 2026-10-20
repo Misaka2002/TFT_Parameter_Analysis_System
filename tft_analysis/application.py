@@ -1,4 +1,4 @@
-"""初始化应用外观，并兼容 Windows 桌面和离屏截图验证。"""
+"""设置应用主题、中文字体和 Qt 对话框的中文翻译。"""
 
 import os
 from pathlib import Path

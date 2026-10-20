@@ -91,8 +91,10 @@ def build_window(window):
     commands.addWidget(window.open_button)
     commands.addSpacing(8)
     window.example_combo = combo()
-    window.example_combo.addItems(["公开样本 1", "公开样本 2", "公开样本 3"])
-    window.example_combo.setFixedWidth(120)
+    window.example_combo.addItems([sample["name"] for sample in window.examples])
+    for index, sample in enumerate(window.examples):
+        window.example_combo.setItemData(index, sample["dataset_doi"], Qt.ItemDataRole.ToolTipRole)
+    window.example_combo.setFixedWidth(210)
     commands.addWidget(window.example_combo)
     commands.addWidget(button("加载示例", "file", window.load_example))
     commands.addStretch()
@@ -133,10 +135,17 @@ def build_window(window):
     analysis.setContentsMargins(0, 0, 0, 0)
     analysis.setSpacing(12)
     section(analysis, "02", "拟合设置", "选择拟合方法，并设置栅极电压范围。")
+    analysis.addWidget(label("器件类型", "fieldLabel"))
+    window.polarity = combo()
+    window.polarity.addItem("n 型 TFT", "n")
+    window.polarity.addItem("p 型 TFT", "p")
+    analysis.addWidget(window.polarity)
+    window.polarity_hint = label("以源极为参考，n 型通常使用正 Vds 和正 Id。", "sectionDescription", True)
+    analysis.addWidget(window.polarity_hint)
     analysis.addWidget(label("计算方法", "fieldLabel"))
     window.method = combo()
-    window.method.addItem("饱和区：√Id–Vg 拟合", "saturation")
-    window.method.addItem("线性区：Id–Vg 拟合", "linear")
+    window.method.addItem("饱和区：√|Id|–Vg 拟合", "saturation")
+    window.method.addItem("线性区：|Id|–Vg 拟合", "linear")
     analysis.addWidget(window.method)
     range_grid = QGridLayout()
     range_grid.setHorizontalSpacing(10)
@@ -156,7 +165,7 @@ def build_window(window):
     range_grid.addWidget(window.end, 1, 1)
     analysis.addLayout(range_grid)
     window.invert = QCheckBox("反转电流符号")
-    window.invert.setToolTip("接线方向导致电流符号相反时，可勾选此项。导出时仍会保留原始电流。")
+    window.invert.setToolTip("电流符号与所选器件类型相反时可勾选，例如仪器将 p 型电流输出为正的幅值。原始电流仍会保留。")
     window.confirm_region = QCheckBox("已核对工作区条件")
     window.confirm_region.setToolTip("请根据测量偏置和所选区间确认器件工作区，程序也会检查模型的近似条件。")
     analysis.addWidget(window.invert)
@@ -173,6 +182,7 @@ def build_window(window):
     device_grid.setVerticalSpacing(6)
     window.width, window.length = QLineEdit(), QLineEdit()
     window.capacitance, window.drain = QLineEdit(), QLineEdit()
+    window.drain.setToolTip("Vds = Vd − Vs，请保留测量偏置的符号；p 型填负值，n 型填正值。")
     fields = [("沟道宽 W / µm", window.width), ("沟道长 L / µm", window.length),
               ("Ci / nF·cm⁻²", window.capacitance), ("Vds / V", window.drain)]
     for index, (text, edit) in enumerate(fields):
@@ -187,7 +197,7 @@ def build_window(window):
     side.addWidget(window.analysis_controls)
     side.addStretch()
     side.addSpacing(14)
-    side.addWidget(label("适用于 n 型 TFT 的单段扫描\n可加载示例，也可导入数据", "sectionDescription", True))
+    side.addWidget(label("支持 n 型和 p 型 TFT 单段扫描\n可加载 n 型和 p 型公开实测示例", "sectionDescription", True))
     scroll = QScrollArea()
     scroll.setObjectName("settingsScroll")
     scroll.setWidgetResizable(True)
@@ -215,7 +225,7 @@ def build_window(window):
     metrics_layout = QHBoxLayout()
     metrics_layout.setSpacing(10)
     window.metrics = []
-    for text, hint in [("阈值电压", "V，拟合估计值"), ("扫描电流比", "仅统计正电流"),
+    for text, hint in [("阈值电压", "V，拟合估计值"), ("扫描电流比", "导通电流幅值之比"),
                        ("场效应迁移率", "cm²/(V·s)"), ("拟合 R²", "当前拟合区间")]:
         metric = MetricCard(text, hint)
         window.metrics.append(metric)

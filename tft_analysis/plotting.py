@@ -9,7 +9,8 @@ rcParams["axes.unicode_minus"] = False
 
 
 def draw_curve(figure: Figure, curve: Curve | None, result: AnalysisResult | None, mode: str,
-               sign: int = 1, method_hint: str = "saturation", theme: str = "light") -> None:
+               sign: int = 1, method_hint: str = "saturation", theme: str = "light",
+               polarity: str = "n") -> None:
     # 界面图表使用深色背景，单独导出的报告图片使用白底；配色只影响显示，不会改变计算数据。
     dark = theme == "dark"
     background = "#0d1117" if dark else "#ffffff"
@@ -36,6 +37,9 @@ def draw_curve(figure: Figure, curve: Curve | None, result: AnalysisResult | Non
                 ha="center", va="center", color=muted, fontsize=13)
         ax.set_axis_off()
     else:
+        if result is not None:
+            polarity = result.settings.polarity
+        polarity_sign = 1 if polarity == "n" else -1
         x, y = curve.voltage, curve.current * sign
         if mode == "linear":
             ax.plot(x, y, color=blue, marker=".", markersize=3, linewidth=1.4, label="测量数据", gid="tft:raw")
@@ -49,11 +53,13 @@ def draw_curve(figure: Figure, curve: Curve | None, result: AnalysisResult | Non
             ax.set_title("半对数转移特性")
         else:
             saturation = (result.settings.method if result is not None else method_hint) == "saturation"
-            positive = y > 0
-            ax.plot(x[positive], np.sqrt(y[positive]) if saturation else y[positive],
-                    ".", color=muted, markersize=4, label="正电流数据", gid="tft:positive")
-            ax.set_ylabel("√Id (A½)" if saturation else "Id (A)")
-            ax.set_title("阈值电压拟合 · 饱和区模型" if saturation else "阈值电压拟合 · 线性区模型")
+            magnitude = polarity_sign * y
+            positive = (magnitude > 0) & np.isfinite(magnitude) & np.isfinite(x)
+            ax.plot(x[positive], np.sqrt(magnitude[positive]) if saturation else magnitude[positive],
+                    ".", color=muted, markersize=4, label="符合极性的电流幅值", gid="tft:positive")
+            ax.set_ylabel("√|Id| (A½)" if saturation else "|Id| (A)")
+            region = "饱和区" if saturation else "线性区"
+            ax.set_title(f"阈值电压拟合 · {polarity} 型{region}模型")
             if result is not None:
                 ax.plot(result.fit_voltage, result.fit_observed, "o", markersize=4,
                         color=blue, label="参与拟合", gid="tft:fit-samples")
@@ -62,11 +68,14 @@ def draw_curve(figure: Figure, curve: Curve | None, result: AnalysisResult | Non
                 ax.axvline(result.threshold_v, color=green, linestyle="--",
                            label=f"Vth ≈ {result.threshold_v:.4g} V")
                 intercept_voltage = -result.intercept / result.slope
-                ax.plot([intercept_voltage, result.fit_voltage[0]],
-                        [0, result.fit_predicted[0]], color=orange, linestyle=":", linewidth=1.4)
-                span = max(result.settings.end - min(result.threshold_v, result.settings.start), 1e-6)
-                ax.set_xlim(min(result.threshold_v, result.settings.start) - span * 0.12,
-                            result.settings.end + span * 0.12)
+                # 外推到靠近截距的一端；p 型的截距通常位于拟合区间右侧。
+                nearest = int(np.argmin(np.abs(result.fit_voltage - intercept_voltage)))
+                ax.plot([intercept_voltage, result.fit_voltage[nearest]],
+                        [0, result.fit_predicted[nearest]], color=orange, linestyle=":", linewidth=1.4)
+                low = min(result.threshold_v, intercept_voltage, result.settings.start)
+                high = max(result.threshold_v, intercept_voltage, result.settings.end)
+                span = max(high - low, 1e-6)
+                ax.set_xlim(low - span * 0.12, high + span * 0.12)
                 ax.set_ylim(min(0, float(result.fit_predicted.min())) - float(result.fit_observed.max()) * 0.08,
                             float(result.fit_observed.max()) * 1.22)
                 ax.axhline(0, color=muted, linewidth=0.7)

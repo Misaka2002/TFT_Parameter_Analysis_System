@@ -2,7 +2,7 @@
 
 ## 数据集与许可
 
-程序内置的三条 TFT 示例曲线取自斯图加特大学 DaRUS 数据仓库的 Figure 1 原始数据目录。数据集名称为 **Replication Data for: High Gain Operational Amplifier Using Enhancement and Depletion Mode a-IGZO TFTs**，DOI 为 [10.18419/DARUS-5121](https://doi.org/10.18419/DARUS-5121)，许可为 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。
+程序原有的三条 n 型 TFT 示例曲线取自斯图加特大学 DaRUS 数据仓库的 Figure 1 原始数据目录。程序还提供三条 IIT/Flexterra 的 p 型公开实测示例，来源与转换方式见 [p 型数据说明](P_TYPE_DATA.md)。本页介绍 n 型 a-IGZO 数据。数据集名称为 **Replication Data for: High Gain Operational Amplifier Using Enhancement and Depletion Mode a-IGZO TFTs**，DOI 为 [10.18419/DARUS-5121](https://doi.org/10.18419/DARUS-5121)，许可为 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。
 
 依据该许可分发或改编材料时，应注明来源、附上许可链接，并说明是否修改。本项目保留数据仓库提供的原始文本文件和绘图脚本，未修改这些文件。软件对数据所作的分析由本项目完成，不代表原作者认可或背书。
 

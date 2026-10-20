@@ -73,8 +73,9 @@ class MainWindow(QMainWindow):
         self.curve = None
         self.result = None
         self._loading = False
+        self.examples = json.loads((ROOT / "data" / "example_catalog.json").read_text(encoding="utf-8"))
         build_window(self)
-        self.notes.setPlainText("支持固定漏极偏置下的 n 型 TFT 转移特性分析。\n\n导出会记录源数据、单位、扫描段、拟合区间和模型假设。")
+        self.notes.setPlainText("支持固定漏极偏置下的 n 型和 p 型 TFT 转移特性分析。\n\n请按测量条件选择器件类型，电压以源极为参考。可加载 n/p 型公开实测示例，也可导入自己的数据。")
         self.clear_result()
         self.refresh_plots()
         for control in (self.method, self.start, self.end):
@@ -82,18 +83,28 @@ class MainWindow(QMainWindow):
             signal.connect(self.invalidate_result)
         self.invert.toggled.connect(self.invalidate_result)
         self.confirm_region.toggled.connect(self.invalidate_result)
+        self.polarity.currentIndexChanged.connect(self.change_polarity)
         for edit in (self.width, self.length, self.capacitance, self.drain):
             edit.textChanged.connect(self.invalidate_result)
 
     def show_help(self):
         QMessageBox.information(self, "使用说明与计算方法",
             "1. 导入数据后，确认电压列、电流列及单位，再选择要分析的扫描段。\n"
-            "2. 查看曲线，输入拟合区间的下限和上限。\n"
-            "3. 饱和区：√Id=a·Vg+b，Vth=−b/a。\n"
-            "4. 线性区：Id=a·Vg+b，已知 Vds 时 Vth=−b/a−Vds/2。\n"
+            "2. 选择 n 型或 p 型，查看曲线后输入拟合区间的下限和上限。\n"
+            "3. 饱和区：√|Id|=a·Vg+b，Vth=−b/a。\n"
+            "4. 线性区：|Id|=a·Vg+b，已知同极性 Vds 时 Vth=−b/a−Vds/2。\n"
             "5. 计算迁移率前，请填写 W、L、Ci、Vds，并确认器件工作区。\n"
             "6. R² 和 RMSE 用于评价本次拟合，计算空间与所选方法一致。\n\n"
-            "当前版本不处理 p 型、接触电阻修正或复杂迁移率模型。详细说明见项目 README.md。")
+            "电压均以源极为参考。p 型通常输入负 Vds、负 Id；仪器输出正电流幅值时，可勾选反转电流符号。\n"
+            "拟合只采用符号符合所选器件类型的非零电流，阈值保留原始电压符号。\n\n"
+            "当前版本不处理接触电阻修正或复杂迁移率模型。详细说明见项目 README.md。")
+
+    def change_polarity(self, *_):
+        p_type = self.polarity.currentData() == "p"
+        self.polarity_hint.setText("以源极为参考，p 型通常使用负 Vds 和负 Id。" if p_type
+                                   else "以源极为参考，n 型通常使用正 Vds 和正 Id。")
+        self.drain.setToolTip("Vds = Vd − Vs，请保留测量偏置的符号；p 型填负值，n 型填正值。")
+        self.invalidate_result()
 
     def set_analysis_state(self, text, state):
         self.state_badge.setText(text)
@@ -121,30 +132,28 @@ class MainWindow(QMainWindow):
 
     def load_example(self):
         try:
-            # 从程序目录查找示例，启动时无需切换到特定目录。
-            metadata = json.loads((ROOT / "data" / "example_metadata.json").read_text(encoding="utf-8-sig"))
-            sample = metadata["dataset"]["samples"][self.example_combo.currentIndex()]
+            sample = self.examples[self.example_combo.currentIndex()]
             path = ROOT / sample["path"]
             curve = make_curve(read_table(path), path)
-            curve.provenance["dataset_doi"] = "10.18419/DARUS-5121"
-            curve.notes.append("示例使用 Schellander 等作者公开的实测数据，来自 DaRUS 数据集 10.18419/DARUS-5121，采用 CC BY 4.0 许可，并非本程序自行采集。")
-            self.set_curve(curve)
-            # 示例只预填已确认的参数；栅端与电容模型尚不明确，Ci 保持为空。
+            curve.provenance.update(sample.get("provenance", {}))
+            curve.provenance.update(dataset_doi=sample["dataset_doi"],
+                                    example_name=sample["name"], polarity=sample["polarity"])
+            curve.notes.extend(sample.get("notes", []))
             self._loading = True
-            self.width.setText("10")
-            self.length.setText("10")
-            self.drain.setText("10")
-            self.start.setValue(-3)
-            self.end.setValue(1)
+            self.polarity.setCurrentIndex(self.polarity.findData(sample["polarity"]))
             self._loading = False
-            note = ("示例器件 W=L=10 µm、Vds=10 V，依据作者脚本与论文 Fig.1。"
-                    "器件为双栅结构，扫描栅端和有效电容模型尚未完全明确，因此 Ci 默认留空。"
-                    "参考脚本按单层介质模型取 εr=4、d=130 nm，估算 Ci≈27.24 nF/cm²；这不是实测电容。"
-                    "示例默认在 −3～1 V 内拟合，使用时可根据曲线调整区间。")
-            for curve_part in self.curves:
-                curve_part.notes.append(note)
-                curve_part.provenance["device_parameter_basis"] = note
-            self.notes.append("\n" + note)
+            self.set_curve(curve)
+            self._loading = True
+            self.method.setCurrentIndex(self.method.findData(sample["method"]))
+            device = sample.get("device", {})
+            for edit, key in [(self.width, "width_um"), (self.length, "length_um"),
+                              (self.capacitance, "capacitance_nf_cm2"), (self.drain, "drain_voltage")]:
+                value = device.get(key)
+                edit.setText("" if value is None else f"{value:g}")
+            self.start.setValue(sample["fit_range_v"][0])
+            self.end.setValue(sample["fit_range_v"][1])
+            self._loading = False
+            self.refresh_plots()
         except Exception as error:
             self._loading = False
             QMessageBox.warning(self, "无法加载示例", str(error))
@@ -176,8 +185,9 @@ class MainWindow(QMainWindow):
         low, high = float(np.min(x)), float(np.max(x))
         self.start.setRange(low, high)
         self.end.setRange(low, high)
-        self.start.setValue(low + 0.65 * (high - low))
-        self.end.setValue(low + 0.9 * (high - low))
+        p_type = self.polarity.currentData() == "p"
+        self.start.setValue(low + (0.1 if p_type else 0.65) * (high - low))
+        self.end.setValue(low + (0.35 if p_type else 0.9) * (high - low))
         self.confirm_region.setChecked(False)
         self._loading = False
         self.analysis_controls.setEnabled(True)
@@ -226,13 +236,13 @@ class MainWindow(QMainWindow):
         for mode, (figure, canvas) in self.plots.items():
             self.hover_controllers[mode].configure(self.curve, self.result,
                                                    -1 if self.invert.isChecked() else 1,
-                                                   self.method.currentData())
+                                                   self.method.currentData(), self.polarity.currentData())
             draw_curve(figure, self.curve, self.result, mode, -1 if self.invert.isChecked() else 1,
-                       self.method.currentData(), theme="dark")
+                       self.method.currentData(), theme="dark", polarity=self.polarity.currentData())
             canvas.draw_idle()
 
     def settings(self):
-        def number(edit, label):
+        def number(edit, label, signed=False):
             text = edit.text().strip()
             if not text:
                 return None
@@ -240,14 +250,16 @@ class MainWindow(QMainWindow):
                 value = float(text)
             except ValueError:
                 raise ValueError(f"{label} 请输入数值，支持科学计数法。") from None
-            if not np.isfinite(value) or value <= 0:
+            if signed and (not np.isfinite(value) or value == 0):
+                raise ValueError(f"{label} 请输入非零的有限数值，并保留偏置符号；未知时留空。")
+            if not signed and (not np.isfinite(value) or value <= 0):
                 raise ValueError(f"{label} 必须为有限正数；未知时留空。")
             return value
         return FitSettings(self.method.currentData(), self.start.value(), self.end.value(),
                            -1 if self.invert.isChecked() else 1,
                            number(self.width, "W"), number(self.length, "L"),
-                           number(self.capacitance, "Ci"), number(self.drain, "Vds"),
-                           self.confirm_region.isChecked())
+                           number(self.capacitance, "Ci"), number(self.drain, "Vds", signed=True),
+                           self.confirm_region.isChecked(), polarity=self.polarity.currentData())
 
     def run_analysis(self):
         if self.curve is None:
@@ -279,8 +291,8 @@ class MainWindow(QMainWindow):
             metric.set_value("未计算" if value == "条件未满足" else value,
                              "请检查器件参数和工作区条件，具体原因见“分析记录”。" if value == "条件未满足" else full_value)
         self.set_analysis_state("分析完成", "complete")
-        method = "√Id–Vg" if result.settings.method == "saturation" else "Id–Vg"
-        self.result_note.setText(f"{method} 最小二乘拟合  ·  {result.settings.start:g} 至 {result.settings.end:g} V  ·  {result.fitted_points} 个拟合点  ·  阈值为模型估计")
+        method = "√|Id|–Vg" if result.settings.method == "saturation" else "|Id|–Vg"
+        self.result_note.setText(f"{result.settings.polarity} 型 · {method} 最小二乘拟合  ·  {result.settings.start:g} 至 {result.settings.end:g} V  ·  {result.fitted_points} 个拟合点  ·  阈值为模型估计")
         self.notes.setPlainText("\n\n".join(result.warnings))
         self.export_button.setEnabled(True)
         self.tabs.setCurrentIndex(2)

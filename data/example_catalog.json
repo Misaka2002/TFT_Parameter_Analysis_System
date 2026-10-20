@@ -1,0 +1,197 @@
+[
+  {
+    "name": "n 型 · IGZO 1",
+    "path": "data/raw/DaRUS_5121_Figure1/YO10_10um_10um_120nm_1.txt",
+    "polarity": "n",
+    "method": "saturation",
+    "fit_range_v": [
+      -3,
+      1
+    ],
+    "device": {
+      "width_um": 10,
+      "length_um": 10,
+      "drain_voltage": 10
+    },
+    "dataset_doi": "10.18419/DARUS-5121",
+    "notes": [
+      "示例使用 Schellander 等作者公开的 a-IGZO TFT 实测数据，来自 DaRUS 数据集 10.18419/DARUS-5121，采用 CC BY 4.0 许可。",
+      "示例器件为 n 型双栅结构，W=L=10 µm、Vds=10 V，依据作者脚本与论文 Fig.1。扫描栅端和有效电容模型尚未完全明确，Ci 默认留空。",
+      "参考脚本按单层介质模型取 εr=4、d=130 nm，估算 Ci≈27.24 nF/cm²；这不是实测电容。初始拟合区间为 −3～1 V，可根据曲线调整。"
+    ],
+    "provenance": {
+      "source_url": "https://doi.org/10.18419/DARUS-5121",
+      "license": "CC BY 4.0",
+      "datafile_id": 386703,
+      "device_parameter_basis": "示例器件为 n 型双栅结构，W=L=10 µm、Vds=10 V，依据作者脚本与论文 Fig.1。扫描栅端和有效电容模型尚未完全明确，Ci 默认留空。"
+    }
+  },
+  {
+    "name": "n 型 · IGZO 2",
+    "path": "data/raw/DaRUS_5121_Figure1/YO10_10um_10um_120nm_2.txt",
+    "polarity": "n",
+    "method": "saturation",
+    "fit_range_v": [
+      -3,
+      1
+    ],
+    "device": {
+      "width_um": 10,
+      "length_um": 10,
+      "drain_voltage": 10
+    },
+    "dataset_doi": "10.18419/DARUS-5121",
+    "notes": [
+      "示例使用 Schellander 等作者公开的 a-IGZO TFT 实测数据，来自 DaRUS 数据集 10.18419/DARUS-5121，采用 CC BY 4.0 许可。",
+      "示例器件为 n 型双栅结构，W=L=10 µm、Vds=10 V，依据作者脚本与论文 Fig.1。扫描栅端和有效电容模型尚未完全明确，Ci 默认留空。",
+      "参考脚本按单层介质模型取 εr=4、d=130 nm，估算 Ci≈27.24 nF/cm²；这不是实测电容。初始拟合区间为 −3～1 V，可根据曲线调整。"
+    ],
+    "provenance": {
+      "source_url": "https://doi.org/10.18419/DARUS-5121",
+      "license": "CC BY 4.0",
+      "datafile_id": 386708,
+      "device_parameter_basis": "示例器件为 n 型双栅结构，W=L=10 µm、Vds=10 V，依据作者脚本与论文 Fig.1。扫描栅端和有效电容模型尚未完全明确，Ci 默认留空。"
+    }
+  },
+  {
+    "name": "n 型 · IGZO 3",
+    "path": "data/raw/DaRUS_5121_Figure1/YO10_10um_10um_120nm_3.txt",
+    "polarity": "n",
+    "method": "saturation",
+    "fit_range_v": [
+      -3,
+      1
+    ],
+    "device": {
+      "width_um": 10,
+      "length_um": 10,
+      "drain_voltage": 10
+    },
+    "dataset_doi": "10.18419/DARUS-5121",
+    "notes": [
+      "示例使用 Schellander 等作者公开的 a-IGZO TFT 实测数据，来自 DaRUS 数据集 10.18419/DARUS-5121，采用 CC BY 4.0 许可。",
+      "示例器件为 n 型双栅结构，W=L=10 µm、Vds=10 V，依据作者脚本与论文 Fig.1。扫描栅端和有效电容模型尚未完全明确，Ci 默认留空。",
+      "参考脚本按单层介质模型取 εr=4、d=130 nm，估算 Ci≈27.24 nF/cm²；这不是实测电容。初始拟合区间为 −3～1 V，可根据曲线调整。"
+    ],
+    "provenance": {
+      "source_url": "https://doi.org/10.18419/DARUS-5121",
+      "license": "CC BY 4.0",
+      "datafile_id": 386695,
+      "device_parameter_basis": "示例器件为 n 型双栅结构，W=L=10 µm、Vds=10 V，依据作者脚本与论文 Fig.1。扫描栅端和有效电容模型尚未完全明确，Ci 默认留空。"
+    }
+  },
+  {
+    "name": "p 型 · 关灯 · −0.1 V",
+    "path": "data/examples/IIT_Flexterra/p_dark_Vds_m0p1.csv",
+    "polarity": "p",
+    "method": "linear",
+    "fit_range_v": [
+      -25,
+      -10
+    ],
+    "device": {
+      "width_um": 100,
+      "length_um": 5,
+      "drain_voltage": -0.1
+    },
+    "dataset_doi": "10.5281/zenodo.17701094",
+    "notes": [
+      "示例来自 Simeon Bamford 整理的 IIT/Flexterra OFET 实测数据，DOI 10.5281/zenodo.17701094，采用 CC BY 4.0 许可。",
+      "该记录为 p 型器件，W=100 µm、L=5 µm、名义 Vds=-0.1 V，测量条件为关灯、18 °C。器件几何和偏置来自文件名及作者附带的导入脚本。",
+      "栅压为扫描程序设定值：按原文件 Scan Table 恢复 −30→30→−30 V、0.1 V 步长，方法与作者导入脚本一致。原数据列分别为实测漏极电压和电流，不把漏极电压列当作栅压。",
+      "parameters.json 给出相对介电常数 3.01 和介质厚度 700 nm，按平板电容估算 Ci≈3.8073 nF/cm²；该值不是实测电容，示例默认留空。",
+      "默认采用线性区模型，初始拟合区间为 -25～-10 V，可根据曲线调整；不是作者报告的参数提取区间。"
+    ],
+    "provenance": {
+      "raw_source_path": "data/raw/Zenodo_17701094/p_dark_Vds_m0p1.dat",
+      "raw_source_sha256": "aaf9c745d47c3c4059c25184807c0130c8383e725dc70c83bfcffb1c652c9ff7",
+      "archive_member": "2021_transistor_sweeps/ptype_W100L5_lights_off/ptypeW100L5_VDS-0.1.dat",
+      "source_url": "https://doi.org/10.5281/zenodo.17701094",
+      "license": "CC BY 4.0",
+      "gate_voltage_basis": "Programmed V_Yoko setpoints reconstructed from Scan Table following the dataset author import script; not a measured gate-voltage column.",
+      "measured_current_column": "Current_ChA in A; copied without filtering, sign changes, smoothing, or resampling.",
+      "measured_voltage_column": "Voltage_ChA in V records drain bias; preserved in the third CSV column.",
+      "lighting": "关灯",
+      "temperature_celsius": 18,
+      "capacitance_basis": "Not prefilled; epsilon_r=3.01 and d=700 nm imply estimated 3.80730076188 nF/cm^2, not measured."
+    },
+    "derived_sha256": "ca75736dfc9690b20f225850a710c13938abb1e6b9323c3521ee2d01328b457c",
+    "rows": 1202
+  },
+  {
+    "name": "p 型 · 开灯 · −0.1 V",
+    "path": "data/examples/IIT_Flexterra/p_light_Vds_m0p1.csv",
+    "polarity": "p",
+    "method": "linear",
+    "fit_range_v": [
+      -25,
+      -10
+    ],
+    "device": {
+      "width_um": 100,
+      "length_um": 5,
+      "drain_voltage": -0.1
+    },
+    "dataset_doi": "10.5281/zenodo.17701094",
+    "notes": [
+      "示例来自 Simeon Bamford 整理的 IIT/Flexterra OFET 实测数据，DOI 10.5281/zenodo.17701094，采用 CC BY 4.0 许可。",
+      "该记录为 p 型器件，W=100 µm、L=5 µm、名义 Vds=-0.1 V，测量条件为开灯、18 °C。器件几何和偏置来自文件名及作者附带的导入脚本。",
+      "栅压为扫描程序设定值：按原文件 Scan Table 恢复 −30→30→−30 V、0.1 V 步长，方法与作者导入脚本一致。原数据列分别为实测漏极电压和电流，不把漏极电压列当作栅压。",
+      "parameters.json 给出相对介电常数 3.01 和介质厚度 700 nm，按平板电容估算 Ci≈3.8073 nF/cm²；该值不是实测电容，示例默认留空。",
+      "默认采用线性区模型，初始拟合区间为 -25～-10 V，可根据曲线调整；不是作者报告的参数提取区间。"
+    ],
+    "provenance": {
+      "raw_source_path": "data/raw/Zenodo_17701094/p_light_Vds_m0p1.dat",
+      "raw_source_sha256": "68ce3b56a3a091f286e02bd3da86b4ab643791ecabe226ef48149d1353a6b23a",
+      "archive_member": "2021_transistor_sweeps/ptype_W100L5_lights_on/ptypeW100L5_VDS-0.1.dat",
+      "source_url": "https://doi.org/10.5281/zenodo.17701094",
+      "license": "CC BY 4.0",
+      "gate_voltage_basis": "Programmed V_Yoko setpoints reconstructed from Scan Table following the dataset author import script; not a measured gate-voltage column.",
+      "measured_current_column": "Current_ChA in A; copied without filtering, sign changes, smoothing, or resampling.",
+      "measured_voltage_column": "Voltage_ChA in V records drain bias; preserved in the third CSV column.",
+      "lighting": "开灯",
+      "temperature_celsius": 18,
+      "capacitance_basis": "Not prefilled; epsilon_r=3.01 and d=700 nm imply estimated 3.80730076188 nF/cm^2, not measured."
+    },
+    "derived_sha256": "de3c62853079cc58607f2fe996dad29419d2b0b3d930f0a86725c59e2e53bb4d",
+    "rows": 1202
+  },
+  {
+    "name": "p 型 · 关灯 · −30 V",
+    "path": "data/examples/IIT_Flexterra/p_dark_Vds_m30.csv",
+    "polarity": "p",
+    "method": "saturation",
+    "fit_range_v": [
+      10,
+      20
+    ],
+    "device": {
+      "width_um": 100,
+      "length_um": 5,
+      "drain_voltage": -30.0
+    },
+    "dataset_doi": "10.5281/zenodo.17701094",
+    "notes": [
+      "示例来自 Simeon Bamford 整理的 IIT/Flexterra OFET 实测数据，DOI 10.5281/zenodo.17701094，采用 CC BY 4.0 许可。",
+      "该记录为 p 型器件，W=100 µm、L=5 µm、名义 Vds=-30 V，测量条件为关灯、18 °C。器件几何和偏置来自文件名及作者附带的导入脚本。",
+      "栅压为扫描程序设定值：按原文件 Scan Table 恢复 −30→30→−30 V、0.1 V 步长，方法与作者导入脚本一致。原数据列分别为实测漏极电压和电流，不把漏极电压列当作栅压。",
+      "parameters.json 给出相对介电常数 3.01 和介质厚度 700 nm，按平板电容估算 Ci≈3.8073 nF/cm²；该值不是实测电容，示例默认留空。",
+      "默认采用饱和区模型，初始拟合区间为 10～20 V，可根据曲线调整；不是作者报告的参数提取区间。"
+    ],
+    "provenance": {
+      "raw_source_path": "data/raw/Zenodo_17701094/p_dark_Vds_m30.dat",
+      "raw_source_sha256": "b5a722d75cd0ff27fdf0f0c8d675059f8b6380b83765cf8a4c9f722095e90b4e",
+      "archive_member": "2021_transistor_sweeps/ptype_W100L5_lights_off/ptypeW100L5_VDS-30.dat",
+      "source_url": "https://doi.org/10.5281/zenodo.17701094",
+      "license": "CC BY 4.0",
+      "gate_voltage_basis": "Programmed V_Yoko setpoints reconstructed from Scan Table following the dataset author import script; not a measured gate-voltage column.",
+      "measured_current_column": "Current_ChA in A; copied without filtering, sign changes, smoothing, or resampling.",
+      "measured_voltage_column": "Voltage_ChA in V records drain bias; preserved in the third CSV column.",
+      "lighting": "关灯",
+      "temperature_celsius": 18,
+      "capacitance_basis": "Not prefilled; epsilon_r=3.01 and d=700 nm imply estimated 3.80730076188 nF/cm^2, not measured."
+    },
+    "derived_sha256": "519f70c32b861fdbc0433ebf037981c4eac4641bdd3fff50ef4cbcddf08e3e91",
+    "rows": 1202
+  }
+]
