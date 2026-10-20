@@ -1,0 +1,79 @@
+{
+  "dataset": {
+    "id": "darus-5121-figure-1-yo10",
+    "title": "Replication Data for: High Gain Operational Amplifier Using Enhancement and Depletion Mode a-IGZO TFTs",
+    "persistent_id": "doi:10.18419/DARUS-5121",
+    "license": "CC BY 4.0",
+    "source_url": "https://doi.org/10.18419/DARUS-5121",
+    "api_url": "https://darus.uni-stuttgart.de/api/datasets/:persistentId/?persistentId=doi:10.18419/DARUS-5121",
+    "data_directory": "Figure 1/ Raw data and script",
+    "reference_script": "data/raw/DaRUS_5121_Figure1/Script.py",
+    "samples": [
+      {
+        "name": "YO10 sample 1",
+        "path": "data/raw/DaRUS_5121_Figure1/YO10_10um_10um_120nm_1.txt",
+        "datafile_id": 386703,
+        "md5": "c377a850fd340ab294a76420c8b69e45",
+        "bytes": 3370,
+        "rows": 200
+      },
+      {
+        "name": "YO10 sample 2",
+        "path": "data/raw/DaRUS_5121_Figure1/YO10_10um_10um_120nm_2.txt",
+        "datafile_id": 386708,
+        "md5": "aad144ab491119c6fa92b5b4c55eebd6",
+        "bytes": 3359,
+        "rows": 200
+      },
+      {
+        "name": "YO10 sample 3",
+        "path": "data/raw/DaRUS_5121_Figure1/YO10_10um_10um_120nm_3.txt",
+        "datafile_id": 386695,
+        "md5": "338aaba4bc77970346f5d72af1e7ad1c",
+        "bytes": 3394,
+        "rows": 200
+      }
+    ],
+    "reference_files": [
+      {
+        "path": "data/raw/DaRUS_5121_Figure1/Script.py",
+        "datafile_id": 386714,
+        "md5": "5a25cb312999abe79c8668fa7f23b332",
+        "bytes": 8706
+      },
+      {
+        "path": "data/raw/DaRUS_5121_Figure1/ReadMe.txt",
+        "datafile_id": 386874,
+        "md5": "5a0db1f47cf2749ccc05186f661de5f1",
+        "bytes": 461
+      }
+    ]
+  },
+  "verified_conditions": {
+    "device_material": "a-IGZO TFT",
+    "channel_width_um": 10,
+    "channel_length_um": 10,
+    "drain_bias_v": 10,
+    "drain_bias_basis": "Figure 1 in the linked paper labels U_D = 10 V",
+    "channel_thickness_nominal_nm": 120,
+    "channel_thickness_script_group_value_nm": 122.6,
+    "channel_thickness_basis": "Filename has 120nm; official Figure 1 Script.py maps sorted YO10 files to thickness array value 122.6 nm",
+    "top_gate_insulator": "SiOx",
+    "top_gate_insulator_thickness_nm": 130,
+    "top_gate_insulator_basis": "linked paper fabrication section; reference script also uses d=130 nm in its gate-capacitance estimate",
+    "reference_script_relative_permittivity_assumption": 4
+  },
+  "unknown_or_not_fully_confirmed": [
+    "The publication and plotting script do not clearly identify whether the recorded UG sweep is applied to the top gate or bottom gate.",
+    "Relative permittivity 4 is an assumption in the reference script; the paper does not specify it as a measured value for this sample.",
+    "The reference script's capacitance formula uses a single 130 nm layer, while the paper also describes a bottom dielectric stack of 175 nm SiN plus 50 nm SiOx; the correct capacitance model for the specific UG terminal is not resolved by these files.",
+    "The dataset does not establish whether suffixes _1, _2, and _3 are repeated sweeps of one device or measurements from separate devices."
+  ],
+  "field_interpretation": {
+    "column_1": "Gate voltage UG in V; based on variable Ugate and Figure 1 axis/description",
+    "column_2": "Drain current ID in A; based on variable Idrain and Figure 1 axis/description",
+    "delimiter": "tab",
+    "header": false,
+    "sweep": "-20.0 V to 19.8 V in 0.2 V increments for the checked sample"
+  }
+}

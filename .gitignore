@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+TFT分析_*/
+work/
+.env
+.env.*
+!.env.example
