@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 TFT分析_*/
 work/
+tests/
 .env
 .env.*
 !.env.example

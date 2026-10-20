@@ -27,6 +27,13 @@ class FitSettings:
     capacitance_nf_cm2: float | None = None
     drain_voltage: float | None = None
     region_confirmed: bool = False
+    polarity: str = "n"
+
+    @property
+    def polarity_sign(self) -> int:
+        if self.polarity not in ("n", "p"):
+            raise ValueError("器件类型必须为 n 或 p。")
+        return 1 if self.polarity == "n" else -1
 
 
 @dataclass
