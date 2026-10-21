@@ -19,8 +19,9 @@ from .export import export_bundle
 from .models import FitSettings
 from .layout import build_window
 from .plotting import draw_curve
+from .paths import RESOURCE_ROOT, default_directory
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = RESOURCE_ROOT
 
 class ImportDialog(QDialog):
     def __init__(self, path, table, parent=None):
@@ -114,7 +115,7 @@ class MainWindow(QMainWindow):
         self.state_badge.update()
 
     def open_file(self):
-        path, _ = QFileDialog.getOpenFileName(self, "打开转移特性数据", str(ROOT),
+        path, _ = QFileDialog.getOpenFileName(self, "打开转移特性数据", str(default_directory()),
                                              "数据文件 (*.txt *.csv *.tsv *.xlsx);;所有文件 (*)")
         if not path:
             return
@@ -302,7 +303,7 @@ class MainWindow(QMainWindow):
     def save_results(self):
         if self.result is None:
             return
-        parent = QFileDialog.getExistingDirectory(self, "选择分析结果保存位置", str(ROOT))
+        parent = QFileDialog.getExistingDirectory(self, "选择分析结果保存位置", str(default_directory()))
         if not parent:
             return
         directory = Path(parent) / ("TFT分析_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
@@ -319,6 +320,6 @@ class MainWindow(QMainWindow):
             self.export_button.setEnabled(self.result is not None)
 
     def save_screenshot(self):
-        path, _ = QFileDialog.getSaveFileName(self, "保存当前界面截图", str(ROOT / "界面截图.png"), "PNG 图片 (*.png)")
+        path, _ = QFileDialog.getSaveFileName(self, "保存当前界面截图", str(default_directory() / "界面截图.png"), "PNG 图片 (*.png)")
         if path and not self.grab().save(path):
             QMessageBox.warning(self, "保存失败", "无法保存图片，请检查文件夹是否可写。")
