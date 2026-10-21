@@ -8,3 +8,5 @@ tests/
 .env
 .env.*
 !.env.example
+build/
+dist/

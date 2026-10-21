@@ -4,14 +4,16 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import QLibraryInfo, QTranslator
-from PySide6.QtGui import QFont, QFontDatabase
+from PySide6.QtGui import QFont, QFontDatabase, QIcon
 
 from .theme import apply_theme
+from .paths import RESOURCE_ROOT
 
 
 def configure_application(application):
     application.setApplicationName("TFT参数分析系统")
     application.setOrganizationName("TFTCourseDesign")
+    application.setWindowIcon(QIcon(str(RESOURCE_ROOT / "assets" / "app.ico")))
     application.setStyle("Fusion")
     # 同时翻译 Qt 自带的按钮、文件选择窗口等界面文字。
     translator = QTranslator(application)

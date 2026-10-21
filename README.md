@@ -16,6 +16,10 @@ p 型拟合页面（IIT/Flexterra 公开实测数据）：
 
 ## 安装与启动
 
+可以从 [GitHub Releases](https://github.com/Misaka2002/TFT_Parameter_Analysis_System/releases/tag/v0.4.0) 下载 EXE 版。EXE 版适用于 Windows 10/11 64 位系统，双击 `TFT参数分析系统_v0.4.0.exe` 即可运行，无需安装 Python。六个公开示例已经包含在程序中，复制 EXE 到其他文件夹后仍可使用。单文件程序启动时需要临时解包，可能要等待数秒。
+
+如果使用源码运行：
+
 在 Windows 上安装 Python 3.13 后，双击项目目录中的 `安装依赖.bat`。依赖安装完成后，双击 `启动程序.bat` 即可打开软件。也可以在项目目录的 PowerShell 中运行：
 
 ```powershell
@@ -24,7 +28,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe app.py
 ```
 
-安装依赖时需要网络；安装完成后，导入、分析和导出均在本机运行。依赖版本列在 `requirements.txt` 中，`requirements-lock.txt` 记录开发环境的依赖版本。当前提供源码运行方式，EXE 打包尚未完成。
+安装依赖时需要网络；安装完成后，导入、分析和导出均在本机运行。依赖版本列在 `requirements.txt` 中，`requirements-lock.txt` 记录开发环境的依赖版本。EXE 版默认从用户“文档”目录打开和保存文件，也可以自行选择其他位置。
 
 ## 基本操作
 
@@ -68,8 +72,16 @@ docs/P_TYPE_DATA.md          p 型数据的来源与使用说明
 docs/screenshots/            界面截图
 requirements.txt             运行依赖
 requirements-lock.txt        开发环境的依赖版本记录
+requirements-build.txt       Windows 打包依赖
+TFT_Parameter_Analysis_System.spec  EXE 打包配置
+packaging/                   Windows 版本信息和分发说明
 安装依赖.bat                 Windows 依赖安装脚本
 启动程序.bat                 Windows 启动脚本
+打包程序.bat                 生成 EXE 和分发压缩包
 ```
 
 公开材料中的 `Script.py` 随原始数据一并保留，仅作为来源和计算方法的参考，不会由本程序导入或执行。本程序采用所选区间内的多点最小二乘拟合；该方法与参考脚本使用的最大斜率两点切线法不同。
+
+## 生成 EXE
+
+在 Windows 64 位 Python 环境中，双击 `打包程序.bat`。脚本会安装打包依赖，并在 `dist/` 中生成单文件 EXE 和分发压缩包。压缩包包含程序、使用说明、公开示例原始材料和依赖许可文本；构建临时文件保存在本地 `work/` 目录，不随源码提交。
